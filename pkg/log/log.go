@@ -96,6 +96,25 @@ func (l *log) Fatalf(format string, v ...interface{}) {
 	write(l.output, fmt.Sprintf(format, v...), level)
 }
 
+func (l *log) SetOutput(path string) error {
+	var file *os.File
+	var err error
+	if _, err = os.Stat(path); os.IsNotExist(err) {
+		// 创建文件
+		if file, err = os.Create(path); err != nil {
+			return err
+		}
+	} else if err != nil {
+		return err
+	}
+
+	if file, err = os.Open(path); err != nil {
+		return err
+	}
+	l.output = file
+	return nil
+}
+
 func write(wr io.Writer, str string, level LogLevel) {
 	w := bufio.NewWriter(wr)
 	w.WriteString(level.String())
@@ -103,30 +122,8 @@ func write(wr io.Writer, str string, level LogLevel) {
 	w.WriteByte('\n')
 }
 
-func New(path string) *log {
-	if "" == path {
-		return Default
-	}
-
-	var file *os.File
-	var err error
-	if _, err = os.Stat(path); os.IsNotExist(err) {
-		// 创建文件
-		if file, err = os.Create(path); err != nil {
-			panic(err)
-		}
-	} else if err != nil {
-		panic(err)
-	}
-
-	if file, err = os.Open(path); err != nil {
-		panic(err)
-	}
-
-	return &log{
-		output: file,
-		m:      sync.RWMutex{},
-	}
+func New() *log {
+	return Default
 }
 
 var (
