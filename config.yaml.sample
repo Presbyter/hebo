@@ -1,0 +1,5 @@
+upstream:
+  - address: 127.0.0.1:3000
+    weight: 1
+  - address: 127.0.0.1:3001
+    weight: 2

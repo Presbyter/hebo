@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"github.com/Presbyter/hebo/pkg/log"
 )
 
 var (
@@ -9,13 +10,12 @@ var (
 )
 
 func init() {
-	flag.StringVar(&configPath, "c", "./config.yaml", "配置文件路径")
+	flag.StringVar(&configPath, "config", "./config.yaml", "配置文件路径")
+	flag.Parse()
 }
 
 func main() {
-	flag.Parse()
-
-	if "" == configPath {
-
-	}
+	l := log.New()
+	l.SetOutput("stdout.log")
+	l.Debug(configPath)
 }

@@ -108,7 +108,7 @@ func (l *log) SetOutput(path string) error {
 		return err
 	}
 
-	if file, err = os.Open(path); err != nil {
+	if file, err = os.OpenFile(path, os.O_APPEND|os.O_CREATE|os.O_WRONLY, os.ModePerm); err != nil {
 		return err
 	}
 	l.output = file
@@ -117,9 +117,10 @@ func (l *log) SetOutput(path string) error {
 
 func write(wr io.Writer, str string, level LogLevel) {
 	w := bufio.NewWriter(wr)
-	w.WriteString(level.String())
+	w.WriteString(fmt.Sprintf("[%s]", level.String()))
 	w.WriteString(str)
 	w.WriteByte('\n')
+	w.Flush()
 }
 
 func New() *log {
