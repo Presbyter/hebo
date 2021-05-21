@@ -1,3 +1,5 @@
+port: 80
+ipbind: 0.0.0.0 # 本机IP 或 127.0.0.1 或 0.0.0.0
 upstream:
   - address: 127.0.0.1:3000
     weight: 1

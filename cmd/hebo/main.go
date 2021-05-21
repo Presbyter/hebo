@@ -1,17 +1,20 @@
 package main
 
 import (
+	"errors"
 	"flag"
+	"fmt"
+	"io/ioutil"
+	"os"
+
 	"github.com/Presbyter/hebo"
 	"github.com/Presbyter/hebo/pkg/log"
 	"gopkg.in/yaml.v3"
-	"io/ioutil"
-	"os"
 )
 
 var (
 	configPath string
-	config     hebo.Config
+	config     *hebo.Config
 )
 
 func init() {
@@ -21,29 +24,43 @@ func init() {
 
 func main() {
 	l := log.New()
-	l.SetOutput("stdout.log")
+	// l.SetOutput("stdout.log")
 	l.Debug(configPath)
 
-	cfgBytes, err := readConfig()
+	var err error
+	config, err = parseConfig()
 	if err != nil {
-		l.Errorf("read config file fail. error: %s", err)
+		panic(err)
 	}
 
-	if err := yaml.Unmarshal(cfgBytes, &config); err != nil {
-		l.Errorf("unmarshal config file fail. error: %s", err)
-		return
-	}
+	fmt.Println(config)
 }
 
-func readConfig() ([]byte, error) {
+//parseConfig 解析配置文件
+func parseConfig() (*hebo.Config, error) {
+	if configPath == "" {
+		return nil, errors.New("config can not be empty")
+	}
+
+	if _, err := os.Stat(configPath); os.IsExist(err) {
+		return nil, errors.New("config file not exist")
+	}
+
 	f, err := os.Open(configPath)
 	if err != nil {
 		return nil, err
 	}
 	defer f.Close()
+
 	cfgBytes, err := ioutil.ReadAll(f)
 	if err != nil {
 		return nil, err
 	}
-	return cfgBytes, nil
+
+	cfg := hebo.Config{}
+	if err := yaml.Unmarshal(cfgBytes, &cfg); err != nil {
+		return nil, err
+	}
+
+	return &cfg, nil
 }

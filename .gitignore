@@ -71,3 +71,5 @@ $RECYCLE.BIN/
 
 .idea
 *.iml
+stdout.log
+go.sum
