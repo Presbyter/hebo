@@ -74,7 +74,7 @@ func (u *upstream) Forward(w http.ResponseWriter, r *http.Request) error {
 	defer resp.Body.Close()
 
 	io.Copy(w, resp.Body)
-	w.WriteHeader(resp.StatusCode)
+	// w.WriteHeader(resp.StatusCode)
 
 	return nil
 }

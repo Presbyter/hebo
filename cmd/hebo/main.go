@@ -1,11 +1,13 @@
 package main
 
 import (
+	"context"
 	"errors"
 	"flag"
 	"fmt"
 	"io/ioutil"
 	"os"
+	"os/signal"
 
 	"github.com/Presbyter/hebo"
 	"github.com/Presbyter/hebo/pkg/log"
@@ -33,7 +35,14 @@ func main() {
 		panic(err)
 	}
 
-	fmt.Println(config)
+	server := hebo.New(config)
+	server.SetLogger(l)
+	server.Run(context.Background())
+
+	c := make(chan os.Signal, 1)
+	signal.Notify(c, os.Interrupt)
+
+	fmt.Printf("server exit now. %v", <-c)
 }
 
 //parseConfig 解析配置文件
