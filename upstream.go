@@ -39,7 +39,7 @@ func (u *upstream) Forward(w http.ResponseWriter, r *http.Request) error {
 
 	var node *node
 	for i := range u.NodeList {
-		if n <= int(u.NodeList[i].Weight) {
+		if n < int(u.NodeList[i].Weight) {
 			node = &u.NodeList[i]
 			break
 		}
